@@ -1,7 +1,5 @@
 module Fluent
-  module Plugin
-    module OutFilterList
-      VERSION = "0.2.0"
-    end
+  module OutFilterList
+    VERSION = "0.2.1"
   end
 end

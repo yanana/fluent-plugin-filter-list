@@ -5,7 +5,7 @@ require "fluent/plugin/out_filter_list/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "fluent-plugin-filter-list"
-  spec.version       = Fluent::Plugin::OutFilterList::VERSION
+  spec.version       = Fluent::OutFilterList::VERSION
   spec.authors       = ["Shun Yanaura"]
   spec.email         = ["metroplexity@gmail.com"]
 

@@ -50,7 +50,7 @@ class Fluent::OutFilterListTest < Minitest::Test
   end
 
   def test_that_it_has_a_version_number
-    refute_nil Fluent::Plugin::OutFilterList::VERSION
+    refute_nil Fluent::OutFilterList::VERSION
   end
 
   def test_that_tag_and_add_prefix_cannot_be_set_simultaneously_for_retag_section
