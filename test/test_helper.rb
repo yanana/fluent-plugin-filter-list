@@ -28,3 +28,4 @@ end
 
 require 'fluent/test'
 require "fluent/plugin/out_filter_list"
+require "fluent/plugin/filter_filter_list"

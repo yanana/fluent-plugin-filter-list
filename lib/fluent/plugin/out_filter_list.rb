@@ -47,20 +47,24 @@ module Fluent
       if @retag && @retag.add_prefix
         @prefix = @retag.add_prefix + "."
       end
+      log.debug "prefix: #{@prefix}, prefix_for_filtered_tag: #{@prefix_for_filtered_tag}"
     end
 
     def emit(tag, es, chain)
       es.each do |time, record|
         target = record[@key_to_filter]
+        log.debug "target: #{target}"
         # Do filter
         if target && @matcher.matches?(target)
           if @retag_for_filtered
             tag = @retag_for_filtered.tag || ((tag && !tag.empty?) ? @prefix_for_filtered_tag + tag : @retag_for_filtered.add_prefix)
+            log.debug "re-emit with tag: #{tag}"
             router.emit(tag, time, record)
           end
           next
         end
         tag = @retag.tag || ((tag && !tag.empty?) ? @prefix + tag : @retag.add_prefix)
+        log.debug "re-emit with tag: #{tag}"
         router.emit(tag, time, record)
       end
     end
