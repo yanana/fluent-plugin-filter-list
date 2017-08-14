@@ -17,32 +17,29 @@ class ACMatcherTest < Minitest::Test
   end
 
   def test_that_internal_nodes_have_only_one_child_and_leaf_node_has_output_given_singleton_array_is_passed
-    kw = ['hoge']
-    acmatcher = ACMatcher.new(kw)
+    acmatcher = ACMatcher.new(['hoge'])
     current_node = acmatcher.trie.root
     while current_node.children.size == 1
       assert(current_node.children.size == 1)
       current_node = current_node.children.values[0]
     end
-    assert(current_node.output.include?(kw[0]))
+    assert(current_node.output.include?('hoge'))
   end
 
   def test_that_output_consists_of_elements_of_input
-    kws = %w(hoge bar bar2 abhc)
+    kws = %w[hoge bar bar2 abhc]
     acmatcher = ACMatcher.new(kws)
 
     @outputs = []
 
-    def detect_output_of_child(node)
+    detect_output_of_child = lambda do |node|
       node.children.values.each do |child_node|
-        unless child_node.output.nil?
-          @outputs.push(child_node.output)
-        end
-        detect_output_of_child(child_node)
+        @outputs.push(child_node.output) unless child_node.output.nil?
+        detect_output_of_child.call(child_node)
       end
     end
 
-    detect_output_of_child(acmatcher.trie.root)
+    detect_output_of_child.call(acmatcher.trie.root)
     assert((@outputs - kws).empty?)
   end
 
@@ -77,8 +74,7 @@ class ACMatcherTest < Minitest::Test
   end
 
   def test_that_blank_pattern_does_not_match
-    kw = ['']
-    acmatcher = ACMatcher.new(kw)
+    acmatcher = ACMatcher.new([''])
     assert(!acmatcher.matches?('foo'))
   end
 

@@ -1,93 +1,51 @@
 require 'test_helper'
 
-class Fluent::FilterFilterListTest < Minitest::Test
-  CONFIG = %[
-  ]
+module Fluent
+  class FilterFilterListTest < Minitest::Test
+    EMPTY_CONFIG = %(
+    )
 
-  CONFIG_1 = %[
-    key_to_filter x
-    patterns_file_path test/fluent/plugin/patterns.txt
-    <retag>
-      tag t2
-    </retag>
-    <retag_filtered>
-      add_prefix x
-    </retag_filtered>
-  ]
+    CONFIG = %(
+      key_to_filter x
+      patterns_file_path test/fluent/plugin/patterns.txt
+    )
 
-  CONFIG_2 = %[
-    key_to_filter x
-    patterns_file_path test/fluent/plugin/patterns.txt
-    <retag>
-      tag t2
-    </retag>
-  ]
+    def setup
+      Fluent::Test.setup
+    end
 
-  CONFIG_3 = %[
-    key_to_filter abc
-    patterns_file_path test/fluent/plugin/patterns.txt
-    <retag>
-      tag t
-      add_prefix x
-    </retag>
-  ]
+    def create_driver(conf = EMPTY_CONFIG, tag = 'test')
+      Fluent::Test::FilterTestDriver.new(Fluent::FilterListFilter, tag).configure(conf, true)
+    end
 
-  CONFIG_4 = %[
-    key_to_filter abc
-    patterns_file_path test/fluent/plugin/patterns.txt
-    <retag_filtered>
-      tag t
-      add_prefix x
-    </retag_filtered>
-  ]
+    def emit(config, msg, time = Time.parse("2017-07-12 19:20:21 UTC").to_i)
+      d = create_driver(config)
+      d.run { d.emit(msg, time) }.filtered_as_array
+    end
 
-  def setup
-    Fluent::Test.setup
+    def test_that_empty_config_results_in_pass_through_filter
+      es = emit('', { 'x' => 'foo', 'y' => 'bar' })
+      assert_equal 1, es.size
+    end
+
+    def test_that_message_whose_filtered_key_value_is_nil_should_be_ignored
+      es = emit(CONFIG, { 'x' => nil, 'y' => 'foo' })
+      assert_equal 1, es.size
+    end
+
+    def test_that_message_containing_a_pattern_is_filtered
+      d = create_driver(CONFIG)
+      es = (
+        d.run do
+          d.emit('x' => 'ab', 'y' => 'foo')
+          d.emit('x' => 'abc', 'y' => 'foo')
+          d.emit('x' => 'abcd', 'y' => 'foo')
+          d.emit('x' => 'zabcd', 'y' => 'foo')
+        end
+      ).filtered_as_array.map { |x| x[2] } # extract record
+      assert_equal 1, es.length
+      assert_equal 'ab', es[0]['x']
+      assert_equal 'foo', es[0]['y']
+    end
   end
-
-  def create_driver(conf = CONFIG, tag = 'test')
-    Fluent::Test::FilterTestDriver.new(Fluent::FilterListFilter, tag).configure(conf, true)
-  end
-
-#   def test_that_tag_and_add_prefix_cannot_be_set_simultaneously_for_retag_section
-#     assert_raises Fluent::ConfigError do
-#       create_driver(CONFIG_3)
-#     end
-#   end
-# 
-#   def test_that_tag_and_add_prefix_cannot_be_set_simultaneously_for_retag_filtered_section
-#     assert_raises Fluent::ConfigError do
-#       create_driver(CONFIG_4)
-#     end
-#   end
-# 
-#   def test_config_without_retag_filtered
-#     d = create_driver(CONFIG_2)
-#     assert_equal "x", d.instance.key_to_filter
-#     assert_equal "t2", d.instance.retag.tag
-#     assert_nil d.instance.retag_for_filtered
-#   end
-# 
-#   def test_matching_record_should_be_retagged_when_configured_to_do_so
-#     d = create_driver(CONFIG_1, "t1")
-#     d.run {
-#       d.emit({ "a" => 1, "b" => 2, "x" => "ab"})
-#       d.emit({ "a" => 1, "b" => 2, "x" => "abc"})
-#       d.emit({ "a" => 1, "b" => 2, "x" => "xabcdef"})
-#     }
-#     emits = d.emits
-#     assert_equal 3, emits.length
-#     assert_equal ["t2", "x.t1", "x.t1"], emits.map { |e| e[0] } # tag
-#   end
-# 
-#   def test_message_including_pattern_should_be_filtered_when_no_retag_filtered_section
-#     d = create_driver(CONFIG_2, "t1")
-#     d.run {
-#       d.emit({ "a" => 1, "b" => 2, "x" => "ab"})
-#       d.emit({ "a" => 1, "b" => 2, "x" => "xabcdef"})
-#     }
-#     emits = d.emits
-#     assert_equal 1, emits.length
-#     assert_equal "t2", emits[0][0] # tag
-#   end
 end

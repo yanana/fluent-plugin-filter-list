@@ -1,0 +1,44 @@
+Metrics/LineLength:
+  Max: 160
+Style/StringLiterals:
+  Enabled: false
+Metrics/MethodLength:
+  Max: 15
+Style/Documentation:
+  Enabled: false
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/MutableConstant:
+  Enabled: false
+Metrics/AbcSize:
+  Max: 25
+Metrics/BlockLength:
+  Exclude:
+    - 'Rakefile'
+    - '**/*.rake'
+    - 'spec/**/*.rb'
+    - 'Gemfile'
+    - 'Guardfile'
+    - 'config/routes.rb'
+    - 'config/routes/**/*.rb'
+    - '*.gemspec'
+Metrics/CyclomaticComplexity:
+  Max: 10
+Metrics/PerceivedComplexity:
+  Max: 10
+Style/GlobalVars:
+  Exclude:
+    - 'test/test_helper.rb'
+Style/MethodMissing:
+  Exclude:
+    - 'test/test_helper.rb'
+Style/TernaryParentheses:
+  Enabled: false
+Style/BlockDelimiters:
+  AutoCorrect: false
+Style/BlockDelimiters:
+  AutoCorrect: false
+Style/BracesAroundHashParameters:
+  Enabled: false
+Layout/IndentHash:
+  EnforcedStyle: consistent

@@ -33,9 +33,7 @@ module Matchers
       current_node = @root
       pattern.split('').each_with_index do |char, i|
         current_node = current_node.insert(char)
-        if i == pattern.length - 1
-          current_node.output = pattern
-        end
+        current_node.output = pattern if i == pattern.length - 1
       end
     end
 

@@ -1,4 +1,4 @@
-require "minitest/autorun"
+require 'minitest/autorun'
 
 require 'rubygems'
 require 'bundler'
@@ -16,16 +16,21 @@ $LOAD_PATH.unshift File.dirname(__FILE__)
 
 require 'fluent/test'
 
-unless ENV.has_key?('VERBOSE')
+unless ENV.key?('VERBOSE')
   nulllogger = Object.new
-  nulllogger.instance_eval {|obj|
+  nulllogger.instance_eval do |_|
     def method_missing(method, *args)
       # pass
+      # super
     end
-  }
+
+    # def respond_to_missing?(method_name, include_private = false)
+    #   super
+    # end
+  end
   $log = nulllogger
 end
 
 require 'fluent/test'
-require "fluent/plugin/out_filter_list"
-require "fluent/plugin/filter_filter_list"
+require 'fluent/plugin/out_filter_list'
+require 'fluent/plugin/filter_filter_list'

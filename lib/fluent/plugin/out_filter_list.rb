@@ -7,17 +7,17 @@ module Fluent
 
     Plugin.register_output('filter_list', self)
 
-    config_param :key_to_filter, :string, :default => nil
-    config_param :patterns_file_path, :string, :default => ''
+    config_param :key_to_filter, :string, default: nil
+    config_param :patterns_file_path, :string, default: ''
 
     config_section :retag, required: true, multi: false do
-      config_param :tag, :string, :default => nil
-      config_param :add_prefix, :string, :default => nil
+      config_param :tag, :string, default: nil
+      config_param :add_prefix, :string, default: nil
     end
 
     config_section :retag_filtered, param_name: :retag_for_filtered, required: false, multi: false do
-      config_param :tag, :string, :default => nil
-      config_param :add_prefix, :string, :default => nil
+      config_param :tag, :string, default: nil
+      config_param :add_prefix, :string, default: nil
     end
 
     def initialize
@@ -25,15 +25,15 @@ module Fluent
     end
 
     def validate(retag)
-      if !retag
-        return
-      end
-      if !(retag.tag || retag.add_prefix)
-        raise Fluent::ConfigError, "missing tag and add_prefix"
-      end
-      if retag.tag && retag.add_prefix
-        raise Fluent::ConfigError, "tag and add_prefix are mutually exclusive"
-      end
+      return unless retag
+      raise Fluent::ConfigError, "missing tag and add_prefix" unless retag.tag || retag.add_prefix
+      raise Fluent::ConfigError, "tag and add_prefix are mutually exclusive" if retag.tag && retag.add_prefix
+    end
+
+    def configure_prefixes
+      @prefix_for_filtered_tag = @retag_for_filtered.add_prefix + '.' if @retag_for_filtered && @retag_for_filtered.add_prefix
+      @prefix_for_filtered_tag = @retag_for_filtered && @retag_for_filtered.add_prefix ? @retag_for_filtered.add_prefix + '.' : ''
+      @prefix = @retag && @retag.add_prefix ? @retag.add_prefix + '.' : ''
     end
 
     def configure(conf)
@@ -41,16 +41,11 @@ module Fluent
       [@retag, @retag_for_filtered].each { |c| validate c }
       patterns = @patterns_file_path.empty? ? [] : File.readlines(@patterns_file_path).map(&:chomp).reject(&:empty?)
       @matcher = ACMatcher.new(patterns)
-      if @retag_for_filtered && @retag_for_filtered.add_prefix
-        @prefix_for_filtered_tag = @retag_for_filtered.add_prefix + "."
-      end
-      if @retag && @retag.add_prefix
-        @prefix = @retag.add_prefix + "."
-      end
-      log.debug "prefix: #{@prefix}, prefix_for_filtered_tag: #{@prefix_for_filtered_tag}"
+      configure_prefixes
+      log.debug "prefix: #{@prefix}, prefix_for_filtered_tag: #{@prefix_for_filtered_tag || ''}"
     end
 
-    def emit(tag, es, chain)
+    def emit(tag, es, _chain)
       es.each do |time, record|
         target = record[@key_to_filter]
         log.debug "target: #{target}"

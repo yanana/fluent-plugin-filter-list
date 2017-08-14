@@ -7,8 +7,8 @@ module Fluent
 
     Plugin.register_filter('filter_list', self)
 
-    config_param :key_to_filter, :string, :default => nil
-    config_param :patterns_file_path, :string, :default => ''
+    config_param :key_to_filter, :string, default: nil
+    config_param :patterns_file_path, :string, default: ''
 
     def configure(conf)
       super
@@ -18,7 +18,8 @@ module Fluent
 
     def filter(_tag, _time, record)
       target = record[@key_to_filter]
-      target && @matcher.matches?(target) ? nil : record
+      return nil if target && @matcher.matches?(target)
+      record
     end
   end
 end
