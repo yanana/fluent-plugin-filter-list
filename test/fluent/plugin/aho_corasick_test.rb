@@ -87,9 +87,18 @@ class ACMatcherTest < Minitest::Test
     assert(!acmatcher.matches?('foo'))
   end
 
-  def test_blank_text_is_never_matched
-    kw = ['foo']
-    acmatcher = ACMatcher.new(kw)
-    assert(!acmatcher.matches?(''))
+  def test_nil_text_never_matches
+    matcher = ACMatcher.new(['xyz'])
+    assert !matcher.matches?(nil)
+  end
+
+  def test_blank_text_never_matches
+    matcher = ACMatcher.new(['foo'])
+    assert(!matcher.matches?(''))
+  end
+
+  def test_text_other_than_string_is_converted_to_string_before_comparison
+    acmatcher = ACMatcher.new(['999'])
+    assert acmatcher.matches?(999)
   end
 end
