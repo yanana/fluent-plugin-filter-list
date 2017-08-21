@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/yanana/fluent-plugin-filter-list.svg?branch=master)](https://travis-ci.org/yanana/fluent-plugin-filter-list)
 
-[Fluentd](http://fluentd.org/) output plugin that filters messages whose value of specified field matches values in a list of patterns (like agrep). This plugin not only filters messages and discards them but also provides the feature to retag filtered records.
+Want to filter fluentd messages containing black-listed words in the list effectively? Use the _fluent-plugin-filter-list_ plugin. The plugin enables you to filter messages in the list of words you provide. You can either discard such messages simply, or process them in a different flow by retagging them.
 
 ## Installation
 
@@ -22,13 +22,52 @@ Or install it yourself as:
 
 ## Usage
 
+This repository contains two plugins: _Filter_ and _Output_, and expects two main use cases.
+
+### Filter plugin
+
+Use the `filter_list` filter. Configure fluentd as follows.
+
 ```
-<match your_tag>
+<filter pattern>
   @type filter_list
-  
+
+  key_to_filter xyz
+  patterns_file_path blacklist.txt
+</filter>
+```
+
+Given the `blacklist.txt` is as follows.
+
+```
+foo
+bar
+buzz
+```
+
+The following message is discarded since its `x` field contains the sequence of characters _bar_, contained in the list.
+
+```json
+{"x":"halbart","y":1}
+```
+
+While the following message is passed through as the target field specified in the config is not _y_ but _x_ .
+
+```json
+{"x":1,"y":"halbart"}
+```
+
+### Output plugin
+
+The other use case is to filter messages likewise, but process the filtered messages in a different tag. You need to configure the plugin to tell it how to retag both non-filtered messages and filtered messages. We provide two mutually-exclusive parameters: `tag` and `add_prefix`. THe `tag` parameter tells the plugin to retag the message with the value exactly provided by the parameter. The `add_prefix` parameter tells the plugin to retag the messages with the original tag prepended with the value you provide. So if the original message had a tag _foo_ and you set the `add_prefix` parameter _filtered_, then the processed message would have the tag _filtered.foo_ (note that the period before the original tag value is also prepended).
+
+```
+<match pattern>
+  @type filter_list
+
   key_to_filter field_name_you_want_to_filter
   patterns_file_path file_including_patterns_separated_by_new_line
-  
+
   <retag>
     add_prefix x # retag non-filtered messages whose tag will be "x.your_tag"
   </retag>
