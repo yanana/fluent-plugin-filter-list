@@ -7,7 +7,7 @@ require 'fluent/plugin/out_filter_list/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'fluent-plugin-filter-list'
-  spec.version       = Fluent::OutFilterList::VERSION
+  spec.version       = Fluent::Plugin::FilterList::VERSION
   spec.authors       = ['Shun Yanaura']
   spec.email         = ['metroplexity@gmail.com']
 
@@ -27,5 +27,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 12.0'
   spec.add_development_dependency 'minitest', '~> 5.0'
   spec.add_development_dependency 'test-unit', '~> 3.2'
-  spec.add_runtime_dependency 'fluentd', '~> 0.12', '>= 0.12.0'
+  spec.add_runtime_dependency 'fluentd', '~> 0.14', '>= 0.14.0'
 end
