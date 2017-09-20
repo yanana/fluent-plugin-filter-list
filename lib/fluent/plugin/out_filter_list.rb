@@ -46,7 +46,16 @@ module Fluent
         patterns = @patterns_file_path.empty? ? [] : File.readlines(@patterns_file_path).map(&:chomp).reject(&:empty?)
         @matcher = ACMatcher.new(patterns)
         configure_prefixes
-        log.debug "prefix: #{@prefix}, prefix_for_filtered_tag: #{@prefix_for_filtered_tag || ''}"
+      end
+
+      def start
+        super
+        log.debug "@retag: %s, @retag_for_filtered: %s, @prefix: %s, @prefix_for_filtered_tag: %s" % [
+          @retag,
+          @retag_for_filtered,
+          @prefix,
+          @prefix_for_filtered_tag || ''
+        ]
       end
 
       def multi_workers_ready?
@@ -60,15 +69,15 @@ module Fluent
           # Do filter
           if target && @matcher.matches?(target)
             if @retag_for_filtered
-              tag = @retag_for_filtered.tag || ((tag && !tag.empty?) ? @prefix_for_filtered_tag + tag : @retag_for_filtered.add_prefix)
-              log.debug "re-emit with tag: #{tag}"
-              router.emit(tag, time, record)
+              t = @retag_for_filtered.tag || ((tag && !tag.empty?) ? @prefix_for_filtered_tag + tag : @retag_for_filtered.add_prefix)
+              log.debug "re-emit with the tag: '#{t}', originally: '#{tag}'"
+              router.emit(t, time, record)
             end
             next
           end
-          tag = @retag.tag || ((tag && !tag.empty?) ? @prefix + tag : @retag.add_prefix)
-          log.debug "re-emit with tag: #{tag}"
-          router.emit(tag, time, record)
+          t = @retag.tag || ((tag && !tag.empty?) ? @prefix + tag : @retag.add_prefix)
+          log.debug "re-emit with the tag: '#{t}', originally: '#{tag}'"
+          router.emit(t, time, record)
         end
       end
     end
