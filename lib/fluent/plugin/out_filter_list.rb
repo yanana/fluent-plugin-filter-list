@@ -50,12 +50,13 @@ module Fluent
 
       def start
         super
-        log.debug "@retag: %s, @retag_for_filtered: %s, @prefix: %s, @prefix_for_filtered_tag: %s" % [
+        log.debug format(
+          "@retag: %s, @retag_for_filtered: %s, @prefix: %s, @prefix_for_filtered_tag: %s",
           @retag,
           @retag_for_filtered,
           @prefix,
           @prefix_for_filtered_tag || ''
-        ]
+        )
       end
 
       def multi_workers_ready?
