@@ -1,5 +1,7 @@
 Metrics/LineLength:
   Max: 160
+Style/FormatString:
+  EnforcedStyle: sprintf
 Style/StringLiterals:
   Enabled: false
 Metrics/MethodLength:
