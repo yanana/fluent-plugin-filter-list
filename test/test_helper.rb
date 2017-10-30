@@ -36,6 +36,8 @@ require 'fluent/test'
 require 'fluent/plugin/out_filter_list'
 require 'fluent/plugin/filter_filter_list'
 
-class Minitest::Test
-  include Fluent::Test::Helpers
+module Minitest
+  class Test
+    include Fluent::Test::Helpers
+  end
 end
