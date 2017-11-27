@@ -1,5 +1,6 @@
 require 'fluent/plugin/out_filter_list/version'
 require 'aho_corasick'
+require 'fluent/plugin/filter'
 
 module Fluent
   module Plugin

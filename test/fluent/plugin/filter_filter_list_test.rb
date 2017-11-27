@@ -20,7 +20,7 @@ module Fluent
         Fluent::Test::Driver::Filter.new(Fluent::Plugin::FilterListFilter).configure(conf)
       end
 
-      def filter(config, msg, time = Time.parse("2017-07-12 19:20:21 UTC").to_i)
+      def filter(config, msg, time = event_time("2017-07-12 19:20:21 UTC"))
         d = create_driver(config)
         d.run { d.feed('test', time, msg) }
         d.filtered_records
