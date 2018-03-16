@@ -28,10 +28,12 @@ This repository contains two plugins: _Filter_ and _Output_, and expects two mai
 
 Use the `filter_list` filter. Configure fluentd as follows.
 
+#### ACMatcher
 ```
 <filter pattern>
   @type filter_list
 
+  filter AC
   key_to_filter xyz
   patterns_file_path blacklist.txt
 </filter>
@@ -55,6 +57,43 @@ While the following message is passed through as the target field specified in t
 
 ```json
 {"x":1,"y":"halbart"}
+```
+
+#### IPMatcher
+```
+<filter pattern>
+  @type filter_list
+
+  filter IP
+  key_to_filter ip
+  patterns_file_path blacklist.txt
+</filter>
+```
+
+Given the `blacklist.txt` is as follows.
+
+```
+192.168.1.0/24
+127.0.0.1/24
+255.255.0.0
+```
+
+The following message is discarded since its `ip` field is the IP address in the list (exact IP).
+
+```json
+{"ip":"255.255.0.0","y":1}
+```
+
+Also the following message is discarded since its `ip` field is the IP address in the list (CIDR-notated IP).
+
+```json
+{"ip":"192.168.1.255","y":1}
+```
+
+While the following message is passed through.
+
+```json
+{"ip":"192.168.2.0","y":1}
 ```
 
 ### Output plugin

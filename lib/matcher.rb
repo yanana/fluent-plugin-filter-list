@@ -1,3 +1,6 @@
+require 'ipaddr'
+require 'ip'
+
 module Matchers
   class ACMatcher
     attr_reader :trie
@@ -15,6 +18,22 @@ module Matchers
         return true unless node.output.nil?
       end
       false
+    end
+  end
+
+  class IPMatcher
+    attr_reader :trie
+    include IP
+
+    def initialize(patterns)
+      patterns = (patterns || []).compact.reject(&:empty?).map { |ip| IP.new(ip) }.map(&:to_binary)
+      @trie = Trie.new patterns
+    end
+
+    def matches?(text)
+      return false if text.nil?
+      ip = IPAddr.new(text).to_i.to_s(2)
+      trie.forward_match(ip)
     end
   end
 
@@ -61,6 +80,17 @@ module Matchers
           child.failure = detect_node.children[char]
         end
       end
+    end
+
+    def forward_match(pattern)
+      return false if @root.children.empty?
+      cur_node = @root
+      pattern.split('').each do |char|
+        return true if cur_node.children.empty?
+        return false unless cur_node.children.key?(char)
+        cur_node = cur_node.children[char]
+      end
+      true
     end
   end
 
