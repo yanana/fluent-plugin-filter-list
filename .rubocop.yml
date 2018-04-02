@@ -1,7 +1,11 @@
+Naming/UncommunicativeMethodParamName:
+  Enabled: false
 Metrics/LineLength:
   Max: 160
 Style/FormatString:
   EnforcedStyle: sprintf
+Style/FormatStringToken:
+  Enabled: false
 Style/StringLiterals:
   Enabled: false
 Metrics/MethodLength:

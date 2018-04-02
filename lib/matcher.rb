@@ -74,9 +74,7 @@ module Matchers
         cur_node.children.each do |char, child|
           q.push(child)
           detect_node = cur_node.failure || @root
-          while detect_node.children[char].nil?
-            detect_node = detect_node.failure
-          end
+          detect_node = detect_node.failure while detect_node.children[char].nil?
           child.failure = detect_node.children[char]
         end
       end
