@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 require 'test_helper'
-require 'aho_corasick'
+require 'matcher'
 
 class ACMatcherTest < Minitest::Test
   include Matchers
@@ -96,5 +96,34 @@ class ACMatcherTest < Minitest::Test
   def test_text_other_than_string_is_converted_to_string_before_comparison
     acmatcher = ACMatcher.new(['999'])
     assert acmatcher.matches?(999)
+  end
+end
+
+class IPMatcherTest < Minitest::Test
+  include Matchers
+
+  def test_matches_when_a_pattern_is_matched
+    k1 = '192.168.1.0/24'
+    k2 = '255.255.0.0/24'
+    kw = [k1, k2]
+    matcher = IPMatcher.new(kw)
+    assert(matcher.matches?('192.168.1.1'))
+    assert(matcher.matches?('255.255.0.255'))
+    assert(!matcher.matches?('255.255.255.0'))
+  end
+
+  def test_that_blank_pattern_does_not_match
+    matcher = ACMatcher.new([''])
+    assert(!matcher.matches?('foo'))
+  end
+
+  def test_nil_pattern_results_to_no_characters_detected
+    matcher = IPMatcher.new(nil)
+    assert(!matcher.matches?('192.168.1.0'))
+  end
+
+  def test_nil_text_never_matches
+    matcher = IPMatcher.new(['192.168.1.0/24'])
+    assert(!matcher.matches?(nil))
   end
 end

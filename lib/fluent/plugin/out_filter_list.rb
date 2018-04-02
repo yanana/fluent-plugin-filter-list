@@ -1,16 +1,19 @@
 require 'fluent/plugin/output'
 require 'fluent/plugin/out_filter_list/version'
-require 'aho_corasick'
+require 'matcher'
+require 'ip'
 
 module Fluent
   module Plugin
     class FilterListOutput < Output
       include Matchers
+      include IP
 
       Plugin.register_output('filter_list', self)
 
       helpers :event_emitter
 
+      config_param :filter, :string, default: 'AC'
       config_param :key_to_filter, :string, default: nil
       config_param :patterns_file_path, :string, default: ''
 
@@ -44,7 +47,7 @@ module Fluent
         super
         [@retag, @retag_for_filtered].each { |c| validate c }
         patterns = @patterns_file_path.empty? ? [] : File.readlines(@patterns_file_path).map(&:chomp).reject(&:empty?)
-        @matcher = ACMatcher.new(patterns)
+        @matcher = (@filter == 'IP') ? IPMatcher.new(patterns) : ACMatcher.new(patterns)
         configure_prefixes
       end
 
