@@ -1,6 +1,4 @@
-# coding: utf-8
-
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'fluent/plugin/out_filter_list/version'
@@ -24,8 +22,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'bundler', '~> 1.16'
+  spec.add_development_dependency 'minitest', '~> 5.11'
   spec.add_development_dependency 'rake', '~> 12.3'
-  spec.add_development_dependency 'minitest', '~> 5.0'
   spec.add_development_dependency 'test-unit', '~> 3.2'
   spec.add_runtime_dependency 'fluentd', '>= 0.14.0', '< 2.0.0'
 end
