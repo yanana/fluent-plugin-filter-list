@@ -10,7 +10,7 @@ module IP
     end
 
     def to_binary
-      binary = @address.to_i.to_s(2)
+      binary = @address.to_i.to_s(2).rjust(32, '0')
       binary.slice(0, @subnet)
     end
   end
