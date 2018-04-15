@@ -103,11 +103,17 @@ class IPMatcherTest < Minitest::Test
   def test_matches_when_a_pattern_is_matched
     k1 = '192.168.1.0/24'
     k2 = '255.255.0.0/24'
-    kw = [k1, k2]
+    k3 = '52.167.0.0/16'
+    k4 = '43.90.0.0/16' # 00101011.01011010.00000000.00000000
+    kw = [k1, k2, k3, k4]
     matcher = IPMatcher.new(kw)
     assert(matcher.matches?('192.168.1.1'))
     assert(matcher.matches?('255.255.0.255'))
     assert(!matcher.matches?('255.255.255.0'))
+    assert(!matcher.matches?('210.156.120.95'))
+    assert(matcher.matches?('43.90.1.254'))
+    assert(!matcher.matches?('173.104.1.254'))
+    assert(!matcher.matches?('86.180.1.254'))
   end
 
   def test_that_blank_pattern_does_not_match
