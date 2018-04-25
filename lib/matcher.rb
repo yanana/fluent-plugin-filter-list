@@ -12,7 +12,7 @@ module Matchers
 
     def matches?(text)
       node = @trie.root
-      text.to_s.split('').each do |char|
+      text.to_s.chars.each do |char|
         node = node.failure while node.children[char].nil? # Follow failure if it exists in case pattern doesn't match
         node = node.children[char]
         return true unless node.output.nil?
