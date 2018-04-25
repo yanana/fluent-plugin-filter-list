@@ -12,7 +12,7 @@ module Matchers
 
     def matches?(text)
       node = @trie.root
-      text.to_s.split('').each do |char|
+      text.to_s.chars.each do |char|
         node = node.failure while node.children[char].nil? # Follow failure if it exists in case pattern doesn't match
         node = node.children[char]
         return true unless node.output.nil?
@@ -50,7 +50,7 @@ module Matchers
 
     def insert(pattern = '')
       current_node = @root
-      pattern.split('').each_with_index do |char, i|
+      pattern.chars.each_with_index do |char, i|
         current_node = current_node.insert(char)
         current_node.output = pattern if i == pattern.length - 1
       end
@@ -83,7 +83,7 @@ module Matchers
     def forward_match(pattern)
       return false if @root.children.empty?
       cur_node = @root
-      pattern.split('').each do |char|
+      pattern.chars.each do |char|
         return true if cur_node.children.empty?
         return false unless cur_node.children.key?(char)
         cur_node = cur_node.children[char]
