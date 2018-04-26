@@ -12,10 +12,18 @@ module Fluent
         key_to_filter x
         patterns_file_path test/fluent/plugin/patterns.txt
       )
+
       CONFIG2 = %(
         filter IP
         key_to_filter ip
         patterns_file_path test/fluent/plugin/ip.txt
+      )
+
+      CONFIG3 = %(
+        filter AC
+        key_to_filter x
+        patterns_file_path test/fluent/plugin/patterns.txt
+        filter_empty true
       )
 
       def setup
@@ -49,9 +57,11 @@ module Fluent
           d.feed('x' => 'abc', 'y' => 'foo')
           d.feed('x' => 'abcd', 'y' => 'foo')
           d.feed('x' => 'zabcd', 'y' => 'foo')
+          d.feed('x' => '', 'y' => 'foo')
+          d.feed('x' => '   ', 'y' => 'foo')
         end
         es = d.filtered_records
-        assert_equal 1, es.length
+        assert_equal 3, es.length
         assert_equal 'ab', es[0]['x']
         assert_equal 'foo', es[0]['y']
       end
@@ -70,6 +80,20 @@ module Fluent
         assert_equal 'foo', es[0]['y']
         assert_equal '127.0.0.1', es[1]['ip']
         assert_equal 'foo', es[1]['y']
+      end
+
+      def test_message_with_empty_field_is_filtered_when_filter_empty_is_true
+        d = create_driver(CONFIG3)
+        d.run(default_tag: 'test') do
+          d.feed('x' => 'ab', 'y' => 'foo')
+          d.feed('x' => 'abc', 'y' => 'foo')
+          d.feed('x' => 'abcd', 'y' => 'foo')
+          d.feed('x' => 'zabcd', 'y' => 'foo')
+          d.feed('x' => '', 'y' => 'foo')
+          d.feed('x' => '   ', 'y' => 'foo')
+        end
+        es = d.filtered_records
+        assert_equal 1, es.length
       end
     end
   end

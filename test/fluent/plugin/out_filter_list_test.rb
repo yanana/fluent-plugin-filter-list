@@ -5,7 +5,7 @@ require 'fluent/test/driver/output'
 
 module Fluent
   module Plugin
-    class OutFilterListTest < Minitest::Test
+    class OutFilterListTest < Minitest::Test # rubocop:disable Metrics/ClassLength
       CONFIG = %(
       )
 
@@ -43,6 +43,18 @@ module Fluent
         <retag_filtered>
           tag t
           add_prefix x
+        </retag_filtered>
+      )
+
+      CONFIG_5 = %(
+        key_to_filter foo
+        patterns_file_path test/fluent/plugin/patterns.txt
+        filter_empty true
+        <retag>
+          tag bar
+        </retag>
+        <retag_filtered>
+          tag buzz
         </retag_filtered>
       )
 
@@ -106,6 +118,17 @@ module Fluent
         events = d.events
         assert_equal 1, events.length
         assert_equal "t2", events[0][0] # tag
+      end
+
+      def test_empty_message_matches_when_filter_empty_is_true
+        d = create_driver(CONFIG_5)
+        d.run(default_tag: 't1') do
+          d.feed('a' => 1, 'b' => 2, 'foo' => '  ')
+          d.feed('a' => 1, 'b' => 2, 'foo' => '')
+        end
+        events = d.events
+        assert_equal 2, events.length
+        assert_equal(%w[buzz buzz], events.map { |e| e[0] }) # tag
       end
     end
   end

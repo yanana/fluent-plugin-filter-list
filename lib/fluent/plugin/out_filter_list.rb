@@ -16,6 +16,7 @@ module Fluent
       config_param :filter, :string, default: 'AC'
       config_param :key_to_filter, :string, default: nil
       config_param :patterns_file_path, :string, default: ''
+      config_param :filter_empty, :bool, default: false
 
       config_section :retag, required: true, multi: false do
         config_param :tag, :string, default: nil
@@ -71,7 +72,7 @@ module Fluent
           target = record[@key_to_filter]
           log.debug "target: #{target}"
           # Do filter
-          if target && @matcher.matches?(target)
+          if target && (@matcher.matches?(target) || (@filter_empty && target.strip.empty?))
             if @retag_for_filtered
               t = @retag_for_filtered.tag || ((tag && !tag.empty?) ? @prefix_for_filtered_tag + tag : @retag_for_filtered.add_prefix)
               log.debug "re-emit with the tag: '#{t}', originally: '#{tag}'"
