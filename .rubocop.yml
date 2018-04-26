@@ -17,7 +17,7 @@ Style/FrozenStringLiteralComment:
 Style/MutableConstant:
   Enabled: false
 Metrics/AbcSize:
-  Max: 25
+  Max: 30
 Metrics/BlockLength:
   Exclude:
     - 'Rakefile'
@@ -29,9 +29,9 @@ Metrics/BlockLength:
     - 'config/routes/**/*.rb'
     - '*.gemspec'
 Metrics/CyclomaticComplexity:
-  Max: 10
+  Max: 15
 Metrics/PerceivedComplexity:
-  Max: 10
+  Max: 15
 Style/GlobalVars:
   Exclude:
     - 'test/test_helper.rb'
