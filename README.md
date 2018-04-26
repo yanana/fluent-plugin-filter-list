@@ -34,8 +34,9 @@ Use the `filter_list` filter. Configure fluentd as follows.
   @type filter_list
 
   filter AC
-  key_to_filter xyz
+  key_to_filter x
   patterns_file_path blacklist.txt
+  filter_empty true
 </filter>
 ```
 
@@ -50,13 +51,28 @@ buzz
 The following message is discarded since its `x` field contains the sequence of characters _bar_, contained in the list.
 
 ```json
-{"x":"halbart","y":1}
+{
+  "x": "halbart",
+  "y": 1
+}
 ```
 
-While the following message is passed through as the target field specified in the config is not _y_ but _x_ .
+While the following message is passed through as the target field specified in the config is not _y_ but _x_.
 
 ```json
-{"x":1,"y":"halbart"}
+{
+  "x": 1,
+  "y": "halbart"
+}
+```
+
+Additionally, the following message is also omitted since `filter_empty` is `true`. The value is determined to be empty when the trimed value is empty.
+
+```json
+{
+  "x": "   ",
+  "y": "halbart"
+}
 ```
 
 #### IPMatcher
@@ -81,19 +97,28 @@ Given the `blacklist.txt` is as follows.
 The following message is discarded since its `ip` field is the IP address in the list (exact IP).
 
 ```json
-{"ip":"255.255.0.0","y":1}
+{
+  "ip": "255.255.0.0",
+  "y": 1
+}
 ```
 
 Also the following message is discarded since its `ip` field is the IP address in the list (CIDR-notated IP).
 
 ```json
-{"ip":"192.168.1.255","y":1}
+{
+  "ip": "192.168.1.255",
+  "y": 1
+}
 ```
 
 While the following message is passed through.
 
 ```json
-{"ip":"192.168.2.0","y":1}
+{
+  "ip": "192.168.2.0",
+  "y": 1
+}
 ```
 
 ### Output plugin
@@ -106,6 +131,7 @@ The other use case is to filter messages likewise, but process the filtered mess
 
   key_to_filter field_name_you_want_to_filter
   patterns_file_path file_including_patterns_separated_by_new_line
+  filter_empty true
 
   <retag>
     add_prefix x # retag non-filtered messages whose tag will be "x.your_tag"
