@@ -51,6 +51,14 @@ class ACMatcherTest < Minitest::Test
     assert(!acmatcher.matches?('abcabc'))
   end
 
+  def test_not_matches_when_a_text_is_invalid_encoding
+    patterns = %w[foo bar]
+    matcher = ACMatcher.new(patterns)
+    # Create invalid UTF-8 byte sequence
+    text = "あ\244\255\192\193い".force_encoding('UTF-8')
+    assert(matcher.matches?(text) == false)
+  end
+
   def test_matches_when_a_pattern_is_at_the_head_of_text
     k1 = 'hoge'
     k2 = 'bar'
