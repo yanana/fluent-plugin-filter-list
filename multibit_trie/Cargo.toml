@@ -1,0 +1,6 @@
+[package]
+name = "multibit_trie"
+version = "0.1.0"
+authors = ["orion46 <earth.nobu.light@gmail.com>"]
+
+[dependencies]
