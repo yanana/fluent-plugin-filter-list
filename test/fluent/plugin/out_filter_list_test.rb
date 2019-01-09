@@ -11,7 +11,7 @@ module Fluent
 
       CONFIG_1 = %(
         key_to_filter x
-        patterns_file_path test/fluent/plugin/patterns.txt
+        pattern_file_paths ["test/fluent/plugin/patterns.txt"]
         <retag>
           tag t2
         </retag>
@@ -22,7 +22,7 @@ module Fluent
 
       CONFIG_2 = %(
         key_to_filter x
-        patterns_file_path test/fluent/plugin/patterns.txt
+        pattern_file_paths ["test/fluent/plugin/patterns.txt"]
         <retag>
           tag t2
         </retag>
@@ -30,7 +30,7 @@ module Fluent
 
       CONFIG_3 = %(
         key_to_filter abc
-        patterns_file_path test/fluent/plugin/patterns.txt
+        pattern_file_paths ["test/fluent/plugin/patterns.txt"]
         <retag>
           tag t
           add_prefix x
@@ -39,7 +39,7 @@ module Fluent
 
       CONFIG_4 = %(
         key_to_filter abc
-        patterns_file_path test/fluent/plugin/patterns.txt
+        pattern_file_paths test/fluent/plugin/patterns.txt
         <retag_filtered>
           tag t
           add_prefix x
@@ -48,7 +48,19 @@ module Fluent
 
       CONFIG_5 = %(
         key_to_filter foo
-        patterns_file_path test/fluent/plugin/patterns.txt
+        pattern_file_paths test/fluent/plugin/patterns.txt
+        filter_empty true
+        <retag>
+          tag bar
+        </retag>
+        <retag_filtered>
+          tag buzz
+        </retag_filtered>
+      )
+
+      CONFIG_6 = %(
+        key_to_filter foo
+        pattern_file_paths ["test/fluent/plugin/patterns.txt", "test/fluent/plugin/patterns_2.txt"]
         filter_empty true
         <retag>
           tag bar
@@ -129,6 +141,18 @@ module Fluent
         events = d.events
         assert_equal 2, events.length
         assert_equal(%w[buzz buzz], events.map { |e| e[0] }) # tag
+      end
+
+      def test_multiple_files
+        d = create_driver(CONFIG_6)
+        d.run(default_tag: 't1') do
+          d.feed('a' => 1, 'b' => 2, 'foo' => 'zyx')
+          d.feed('a' => 1, 'b' => 2, 'foo' => 'xyz')
+          d.feed('a' => 1, 'b' => 2, 'foo' => 'b')
+        end
+        events = d.events
+        assert_equal 3, events.length
+        assert_equal(%w[buzz buzz bar], events.map { |e| e[0] })
       end
     end
   end

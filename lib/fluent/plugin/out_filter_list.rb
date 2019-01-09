@@ -15,7 +15,7 @@ module Fluent
 
       config_param :filter, :string, default: 'AC'
       config_param :key_to_filter, :string, default: nil
-      config_param :patterns_file_path, :string, default: ''
+      config_param :pattern_file_paths, :array, default: [], value_type: :string
       config_param :filter_empty, :bool, default: false
 
       config_section :retag, required: true, multi: false do
@@ -47,7 +47,7 @@ module Fluent
       def configure(conf)
         super
         [@retag, @retag_for_filtered].each { |c| validate c }
-        patterns = @patterns_file_path.empty? ? [] : File.readlines(@patterns_file_path).map(&:chomp).reject(&:empty?)
+        patterns = @pattern_file_paths.flat_map { |p| File.readlines(p).map(&:chomp).reject(&:empty?) }
         @matcher = (@filter == 'IP') ? IPMatcher.new(patterns) : ACMatcher.new(patterns)
         configure_prefixes
       end
