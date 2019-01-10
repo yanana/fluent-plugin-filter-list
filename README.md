@@ -35,7 +35,7 @@ Use the `filter_list` filter. Configure fluentd as follows.
 
   filter AC
   key_to_filter x
-  patterns_file_path blacklist.txt
+  pattern_file_paths ["blacklist_1.txt", "blacklist_2.txt"]
   filter_empty true
 </filter>
 ```
@@ -82,7 +82,7 @@ Additionally, the following message is also omitted since `filter_empty` is `tru
 
   filter IP
   key_to_filter ip
-  patterns_file_path blacklist.txt
+  pattern_file_paths blacklist.txt
 </filter>
 ```
 
@@ -130,7 +130,7 @@ The other use case is to filter messages likewise, but process the filtered mess
   @type filter_list
 
   key_to_filter field_name_you_want_to_filter
-  patterns_file_path file_including_patterns_separated_by_new_line
+  pattern_file_paths ["file_including_patterns_separated_by_new_line"]
   filter_empty true
 
   <retag>

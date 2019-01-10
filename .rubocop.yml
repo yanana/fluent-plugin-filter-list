@@ -35,7 +35,10 @@ Metrics/PerceivedComplexity:
 Style/GlobalVars:
   Exclude:
     - 'test/test_helper.rb'
-Style/MethodMissing:
+Style/MethodMissingSuper:
+  Exclude:
+    - 'test/test_helper.rb'
+Style/MissingRespondToMissing:
   Exclude:
     - 'test/test_helper.rb'
 Style/TernaryParentheses:

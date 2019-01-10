@@ -32,6 +32,7 @@ module Matchers
 
     def matches?(text)
       return false if text.nil?
+
       ip = IPAddr.new(text).to_i.to_s(2).rjust(32, '0')
       trie.forward_match(ip)
     end
@@ -82,10 +83,12 @@ module Matchers
 
     def forward_match(pattern)
       return false if @root.children.empty?
+
       cur_node = @root
       pattern.chars.each do |char|
         return true if cur_node.children.empty?
         return false unless cur_node.children.key?(char)
+
         cur_node = cur_node.children[char]
       end
       true

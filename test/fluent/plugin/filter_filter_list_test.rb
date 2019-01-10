@@ -10,19 +10,19 @@ module Fluent
       CONFIG1 = %(
         filter AC
         key_to_filter x
-        patterns_file_path test/fluent/plugin/patterns.txt
+        pattern_file_paths ["test/fluent/plugin/patterns.txt"]
       )
 
       CONFIG2 = %(
         filter IP
         key_to_filter ip
-        patterns_file_path test/fluent/plugin/ip.txt
+        pattern_file_paths ["test/fluent/plugin/ip.txt"]
       )
 
       CONFIG3 = %(
         filter AC
         key_to_filter x
-        patterns_file_path test/fluent/plugin/patterns.txt
+        pattern_file_paths ["test/fluent/plugin/patterns.txt"]
         filter_empty true
       )
 
