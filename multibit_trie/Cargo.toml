@@ -4,3 +4,8 @@ version = "0.1.0"
 authors = ["orion46 <earth.nobu.light@gmail.com>"]
 
 [dependencies]
+libc = "0.2"
+
+[lib]
+name = "multibit_trie"
+crate-type = ["rlib","dylib"]

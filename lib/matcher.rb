@@ -1,5 +1,6 @@
 require 'ipaddr'
 require 'ip'
+require 'multibit'
 
 module Matchers
   class ACMatcher
@@ -35,6 +36,26 @@ module Matchers
 
       ip = IPAddr.new(text).to_i.to_s(2).rjust(32, '0')
       trie.forward_match(ip)
+    end
+  end
+
+  class MultiBitTrieIPMatcher
+    attr_reader :multibittrie
+    include IP
+    include Multibit
+
+    def initialize(patterns)
+      patterns = (patterns || []).compact.reject(&:empty?).map { |ip| IP.new(ip) }.map(&:to_binary)
+      @multibittrie = Multibit::MultiBitTrie.new(3)
+      patterns.each do |pattern|
+        @multibittrie.insert(pattern)
+      end
+    end
+
+    def matches?(text)
+      return false if text.nil?
+      ip = IPAddr.new(text).to_i.to_s(2).rjust(32, '0')
+      @multibittrie.search(ip)
     end
   end
 

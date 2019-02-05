@@ -25,5 +25,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'minitest', '~> 5.11'
   spec.add_development_dependency 'rake', '~> 12.3'
   spec.add_development_dependency 'test-unit', '~> 3.2'
+  spec.add_runtime_dependency 'ffi'
   spec.add_runtime_dependency 'fluentd', '>= 0.14.0', '< 2.0.0'
 end

@@ -26,6 +26,12 @@ module Fluent
         filter_empty true
       )
 
+      CONFIG4 = %(
+        filter MultiBitTrieIP
+        key_to_filter ip
+        patterns_file_path test/fluent/plugin/ip.txt
+      )
+
       def setup
         Fluent::Test.setup
       end
@@ -95,6 +101,22 @@ module Fluent
         es = d.filtered_records
         assert_equal 1, es.length
       end
+    end
+
+    def test_that_message_containing_an_ip_is_filtered_by_multibittrie
+      d = create_driver(CONFIG4)
+      d.run(default_tag: 'test') do
+        d.feed('ip' => '192.168.1.1', 'y' => 'foo')
+        d.feed('ip' => '192.168.1.255', 'y' => 'foo')
+        d.feed('ip' => '192.168.2.0', 'y' => 'foo')
+        d.feed('ip' => '127.0.0.1', 'y' => 'foo')
+      end
+      es = d.filtered_records
+      assert_equal 2, es.length
+      assert_equal '192.168.2.0', es[0]['ip']
+      assert_equal 'foo', es[0]['y']
+      assert_equal '127.0.0.1', es[1]['ip']
+      assert_equal 'foo', es[1]['y']
     end
   end
 end
