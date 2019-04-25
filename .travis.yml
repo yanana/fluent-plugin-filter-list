@@ -14,14 +14,7 @@ before_install:
   - export PATH=~/.cargo/bin:$PATH
   - cargo install cross
   - cd multibit_trie
-  # - cross build --release --target i686-apple-darwin
-  - cross build --release --target i686-pc-windows-gnu
-  # - cross build --release --target i686-pc-windows-msvc
-  - cross build --release --target i686-unknown-linux-gnu
-  # - cross build --release --target x86_64-apple-darwin
-  - cross build --release --target x86_64-pc-windows-gnu
-  - cross build --release --target x86_64-pc-windows-msvc
-  - cross build --release --target x86_64-unknown-linux-gnu
+  - sh cross-compile.sh
   - ls -lR target/
 script:
   - bundle exec rake
