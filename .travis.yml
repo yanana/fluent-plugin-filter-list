@@ -1,4 +1,7 @@
 language: ruby
+os:
+  - linux
+  - osx
 rvm:
   - 2.3
   - 2.4
@@ -7,14 +10,15 @@ rvm:
 services:
   - docker
 before_install:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update          ; fi
   - gem update --remote bundler
   - gem update --system
   - gem install rubocop bundler
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - export PATH=~/.cargo/bin:$PATH
-  - cargo install cross
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; cargo install cross          ; fi
   - cd multibit_trie
-  - sh cross-compile.sh
+  - sh compile.sh
   - ls -lR target/
 script:
   - bundle exec rake
