@@ -16,7 +16,7 @@ before_install:
   - gem install rubocop bundler
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - export PATH=~/.cargo/bin:$PATH
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; cargo install cross          ; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cargo install cross          ; fi
   - cd multibit_trie
   - sh compile.sh
   - ls -lR target/
