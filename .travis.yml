@@ -7,26 +7,25 @@ rvm:
   - 2.4
   - 2.5
   - 2.6
-services:
-  - docker
 
 matrix:
   # TODO These are all the build jobs. Adjust as necessary. Comment out what you
   # don't need
   include:
-
-    # OSX
-    - env: TARGET=i686-apple-darwin
-      os: osx
+    # macOS
     - env: TARGET=x86_64-apple-darwin
       os: osx
+      before_install:
+        - brew update
+
 
     # Linux
     - os: linux
       dist: xenial
+      services:
+        - docker
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update          ; fi
   - gcc -v
   - gem update --remote bundler
   - gem update --system
