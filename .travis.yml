@@ -1,40 +1,53 @@
-language: ruby
-os:
-  - linux
-  - osx
-rvm:
-  - 2.3
-  - 2.4
-  - 2.5
-  - 2.6
+# language: ruby
+# os:
+#   - linux
+#   - osx
+# rvm:
+#   - 2.3
+#   - 2.4
+#   - 2.5
+#   - 2.6
 
-matrix:
-  # TODO These are all the build jobs. Adjust as necessary. Comment out what you
-  # don't need
-  include:
-    # macOS
-    - env: TARGET=x86_64-apple-darwin
-      os: osx
-      before_install:
-        - brew update
+# matrix:
+#   # TODO These are all the build jobs. Adjust as necessary. Comment out what you
+#   # don't need
+#   include:
+#     # macOS
+#     - env: TARGET=x86_64-apple-darwin
+#       os: osx
+#       before_install:
+#         - brew update
 
 
-    # Linux
-    - os: linux
-      dist: xenial
-      services:
-        - docker
+#     # Linux
+#     - os: linux
+#       dist: xenial
+#       services:
+#         - docker
+
+# before_install:
+#   - gcc -v
+#   - gem update --remote bundler
+#   - gem update --system
+#   - gem install rubocop bundler
+#   - curl https://sh.rustup.rs -sSf | sh -s -- -y
+#   - export PATH=~/.cargo/bin:$PATH
+#   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cargo install cross          ; fi
+#   - cd multibit_trie
+#   - sh compile.sh
+#   - ls -lR target/
+# script:
+#   - bundle exec rake
+
+language: rust
+os: linux
+dist: xenial
+services: docker
 
 before_install:
-  - gcc -v
-  - gem update --remote bundler
-  - gem update --system
-  - gem install rubocop bundler
-  - curl https://sh.rustup.rs -sSf | sh -s -- -y
-  - export PATH=~/.cargo/bin:$PATH
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cargo install cross          ; fi
+  - cargo install cross
   - cd multibit_trie
   - sh compile.sh
-  - ls -lR target/
+
 script:
-  - bundle exec rake
+  - echo Done
