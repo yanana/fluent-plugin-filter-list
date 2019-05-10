@@ -2,6 +2,9 @@ language: ruby
 rvm:
   - 2.6
 rust: stable
+sudo: required
+services:
+  - docker
 
 matrix:
   include:
