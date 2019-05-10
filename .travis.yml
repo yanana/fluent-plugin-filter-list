@@ -1,6 +1,5 @@
 language: ruby
 services: docker
-sudo: required
 rvm:
   - 2.3
   - 2.4
