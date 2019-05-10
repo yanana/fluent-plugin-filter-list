@@ -45,7 +45,9 @@ dist: xenial
 services: docker
 
 before_install:
-  - cargo install cross
+  - rustup self update
+  - source ~/.cargo/env
+  - cargo install --force cross
   - cd multibit_trie
   - sh compile.sh
 
