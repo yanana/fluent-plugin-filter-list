@@ -7,23 +7,9 @@ rvm:
   - 2.5
   - 2.6
 
-matrix:
-  include:
-    - os: osx
-      language: ruby
-      env: TARGET=x86_64-apple-darwin
-    - os: linux
-      language: ruby
-      env: TARGET=i686-pc-windows-gnu
-    - os: linux
-      language: ruby
-      env: TARGET=x86_64-pc-windows-gnu
-    - os: linux
-      language: ruby
-      env: TARGET=x86_64-unknown-linux-gnu
-    - os: linux
-      language: ruby
-      env: TARGET=i686-unknown-linux-gnu
+os:
+  - osx
+  - linux
 
 before_script:
   - gcc -v
@@ -37,6 +23,6 @@ before_script:
   - cd multibit_trie
 
 script:
-  - cross build --target $TARGET --release
+  - sh compile.sh
   - ls -lR target/
   - bundle exec rake
