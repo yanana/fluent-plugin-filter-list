@@ -9,18 +9,13 @@ services:
 matrix:
   include:
     - os: osx
-    #   env: TARGET=x86_64-apple-darwin
-    # - env: TARGET=x86_64-unknown-linux-gnu
-    # - env: TARGET=i686-unknown-linux-gnu
-    # - env: TARGET=x86_64-pc-windows-gnu
-    # - env: TARGET=i686-pc-windows-gnu
     - os: linux
       dist: xenial
 
 before_install:
-  # - gem update --remote bundler
-  # - gem update --system
-  # - gem install rubocop bundler
+  - gem update --remote bundler
+  - gem update --system
+  - gem install rubocop bundler
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - export PATH=~/.cargo/bin:$PATH
   - source ~/.cargo/env
@@ -31,8 +26,8 @@ before_install:
   - cd multibit_trie
 
 install:
-  # - cross build --release --target $TARGET
   - sh compile.sh
 
 script:
   - ls -lR target/
+  - bundle exec rake
