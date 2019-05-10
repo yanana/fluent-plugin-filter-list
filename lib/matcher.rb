@@ -54,6 +54,7 @@ module Matchers
 
     def matches?(text)
       return false if text.nil?
+
       ip = IPAddr.new(text).to_i.to_s(2).rjust(32, '0')
       @multibittrie.search(ip)
     end
