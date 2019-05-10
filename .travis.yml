@@ -11,23 +11,18 @@ matrix:
   include:
     - os: osx
       language: ruby
-      rust: stable
       env: TARGET=x86_64-apple-darwin
     - os: linux
       language: ruby
-      rust: stable
       env: TARGET=i686-pc-windows-gnu
     - os: linux
       language: ruby
-      rust: stable
       env: TARGET=x86_64-pc-windows-gnu
     - os: linux
       language: ruby
-      rust: stable
       env: TARGET=x86_64-unknown-linux-gnu
     - os: linux
       language: ruby
-      rust: stable
       env: TARGET=i686-unknown-linux-gnu
 
 before_script:
