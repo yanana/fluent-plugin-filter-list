@@ -1,7 +1,6 @@
 language: ruby
 services: docker
 sudo: required
-cache: cargo
 rvm:
   - 2.3
   - 2.4
