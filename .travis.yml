@@ -43,13 +43,31 @@ language: rust
 os: linux
 dist: xenial
 services: docker
+sudo: required
+cache: cargo
 
-before_install:
+matrix:
+  include:
+    - os: osx
+      rust: stable
+      env: TARGET=x86_64-apple-darwin
+    - os: linux
+      rust: stable
+      env: TARGET=x86_64-unknown-linux-gnu
+    - os: linux
+      rust: stable
+      env: TARGET=i686-unknown-linux-gnu
+    - os: linux
+      rust: stable
+      env: TARGET=aarch64-unknown-linux-gnu
+
+before_script:
   - rustup self update
-  - source ~/.cargo/env
+  - rustc -V
+  - cargo -V
   - cargo install --force cross
   - cd multibit_trie
-  - sh compile.sh
 
 script:
-  - echo Done
+  - cross build --target $TARGET --release
+  - ls -lR target/
