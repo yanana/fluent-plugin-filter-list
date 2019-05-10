@@ -1,27 +1,19 @@
 language: ruby
-services: docker
 rvm:
-  - 2.3
-  - 2.4
-  - 2.5
   - 2.6
+services:
+  - docker
+sudo: required
 
-os:
-  - osx
-  - linux
-
-before_script:
-  - gcc -v
+before_install:
   - gem update --remote bundler
   - gem update --system
+  - gem install rubocop bundler
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
-  - rustup self update
-  - rustc -V
-  - cargo -V
-  - cargo install --force cross
+  - export PATH=~/.cargo/bin:$PATH
+  - cargo install cross
   - cd multibit_trie
-
-script:
-  - sh compile.sh
+  - sh cross-compile.sh
   - ls -lR target/
+script:
   - bundle exec rake
