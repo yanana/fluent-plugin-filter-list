@@ -32,4 +32,5 @@ install:
 
 script:
   - ls -lR target/
+  - cd ..
   - bundle exec rake
