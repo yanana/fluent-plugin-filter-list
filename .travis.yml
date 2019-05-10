@@ -4,16 +4,34 @@ rvm:
 services:
   - docker
 sudo: required
+dist: xenial
+
+matrix:
+  include:
+    - rust: stable
+      env: TARGET=x86_64-unknown-linux-gnu
+    - rust: stable
+      env: TARGET=i686-unknown-linux-gnu
+    - rust: stable
+      env: TARGET=x86_64-pc-windows-gnu
+    - rust: stable
+      env: TARGET=i686-pc-windows-gnu
 
 before_install:
-  - gem update --remote bundler
-  - gem update --system
-  - gem install rubocop bundler
+  # - gem update --remote bundler
+  # - gem update --system
+  # - gem install rubocop bundler
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - export PATH=~/.cargo/bin:$PATH
-  - cargo install cross
+  - source ~/.cargo/env
+  - rustup self update
+  - rustc -V
+  - cargo -V
+  - cargo install --force cross
   - cd multibit_trie
+
+install:
   - sh compile.sh
-  - ls -lR target/
+
 script:
-  - bundle exec rake
+  - ls -lR target/
