@@ -13,7 +13,7 @@ before_install:
   - export PATH=~/.cargo/bin:$PATH
   - cargo install cross
   - cd multibit_trie
-  - sh cross-compile.sh
+  - sh compile.sh
   - ls -lR target/
 script:
   - bundle exec rake
