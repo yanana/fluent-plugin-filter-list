@@ -15,25 +15,24 @@ matrix:
       dist: xenial
 
 before_install:
-  # - gem update --remote bundler
-  # - gem update --system
-  # - gem install rubocop bundler
-  # - bundle install
+  - gem update --remote bundler
+  - gem update --system
+  - gem install rubocop bundler
+  - bundle install
   - curl https://sh.rustup.rs -sSf | sh -s -- -y
   - export PATH=~/.cargo/bin:$PATH
   - source ~/.cargo/env
   - rustup self update
   - rustc -V
   - cargo -V
-  # - cargo install --force cross
+  - cargo install --force cross
   - cd multibit_trie
 
 install:
-  # - sh compile.sh
+  - sh compile.sh
   - cargo build --release
-  - ls ./target/release
-  - cp ./target/release/libmultibit_trie.dylib ../lib/
+  - ls -lR target/
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cp ./target/release/libmultibit_trie.d ../lib/libmultibit_trie.dylib fi
 
 script:
-  - ls -lR target/
   - bundle exec rake
