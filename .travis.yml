@@ -25,7 +25,7 @@ before_install:
   - rustup self update
   - rustc -V
   - cargo -V
-  # - cargo install --force cross
+  - cargo install --force cross
   - cd multibit_trie
 
 install:
