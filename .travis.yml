@@ -30,6 +30,8 @@ before_install:
 
 install:
   - sh compile.sh
+  - cargo build --release
+  - cp ./target/release/libmultibit_trie.dylib ../lib/
 
 script:
   - ls -lR target/
