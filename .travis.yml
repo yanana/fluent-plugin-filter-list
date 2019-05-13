@@ -25,11 +25,12 @@ before_install:
   - rustup self update
   - rustc -V
   - cargo -V
-  - cargo install --force cross
+  # - cargo install --force cross
   - cd multibit_trie
 
 install:
   - sh compile.sh
   - ls -lR target/
+  - ls ../lib
 script:
   - bundle exec rake
