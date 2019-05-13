@@ -30,9 +30,6 @@ before_install:
 
 install:
   - sh compile.sh
-  - cargo build --release
   - ls -lR target/
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cp ./target/release/libmultibit_trie.d ../lib/libmultibit_trie.dylib fi
-
 script:
   - bundle exec rake
