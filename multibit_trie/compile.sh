@@ -11,8 +11,8 @@ if [ "$TRAVIS_OS_NAME" = "linux" ]; then
     # cross build --release --target i686-unknown-linux-gnu
     # cross build --release --target i686-pc-windows-gnu
     # cross build --release --target x86_64-pc-windows-gnu
-    cp ./target/release/libmultibit_trie.so ../lib/libmultibit_trie.dylib
+    sudo cp ./target/release/libmultibit_trie.so /usr/local/lib
 elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
     # cross build --release --target x86_64-apple-darwin
-    cp ./target/release/libmultibit_trie.dylib ../lib/
+    sudo cp ./target/release/libmultibit_trie.dylib /usr/local/lib
 fi

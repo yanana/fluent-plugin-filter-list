@@ -30,7 +30,7 @@ before_install:
 
 install:
   - sh compile.sh
-  - ls -lR target/
-  - ls ../lib
+  - ls -lR target/  
+
 script:
   - bundle exec rake
