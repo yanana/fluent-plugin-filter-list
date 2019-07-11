@@ -39,9 +39,9 @@ module Fluent
       end
 
       def configure_prefixes
-        @prefix_for_filtered_tag = @retag_for_filtered.add_prefix + '.' if @retag_for_filtered && @retag_for_filtered.add_prefix
-        @prefix_for_filtered_tag = @retag_for_filtered && @retag_for_filtered.add_prefix ? @retag_for_filtered.add_prefix + '.' : ''
-        @prefix = @retag && @retag.add_prefix ? @retag.add_prefix + '.' : ''
+        @prefix_for_filtered_tag = @retag_for_filtered.add_prefix + '.' if @retag_for_filtered&.add_prefix
+        @prefix_for_filtered_tag = @retag_for_filtered&.add_prefix ? @retag_for_filtered.add_prefix + '.' : ''
+        @prefix = @retag&.add_prefix ? @retag.add_prefix + '.' : ''
       end
 
       def configure(conf)
