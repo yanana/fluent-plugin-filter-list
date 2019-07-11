@@ -47,7 +47,7 @@ module Fluent
       def configure(conf)
         super
         [@retag, @retag_for_filtered].each { |c| validate c }
-        patterns = @pattern_file_paths.flat_map { |p| File.readlines(p).map(&:chomp).reject(&:empty?) }
+        patterns = @pattern_file_paths.flat_map { |p| File.readlines(p).map(&:strip).reject(&:empty?) }
         @matcher = (@filter == 'IP') ? IPMatcher.new(patterns) : ACMatcher.new(patterns)
         configure_prefixes
       end
