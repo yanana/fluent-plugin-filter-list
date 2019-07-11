@@ -49,5 +49,5 @@ Style/BlockDelimiters:
   AutoCorrect: false
 Style/BracesAroundHashParameters:
   Enabled: false
-Layout/IndentHash:
+Layout/IndentFirstHashElement:
   EnforcedStyle: consistent
