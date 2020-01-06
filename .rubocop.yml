@@ -1,4 +1,4 @@
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   Enabled: false
 Metrics/LineLength:
   Max: 160
@@ -49,5 +49,5 @@ Style/BlockDelimiters:
   AutoCorrect: false
 Style/BracesAroundHashParameters:
   Enabled: false
-Layout/IndentFirstHashElement:
+Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
