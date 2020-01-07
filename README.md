@@ -29,6 +29,9 @@ This repository contains two plugins: _Filter_ and _Output_, and expects two mai
 Use the `filter_list` filter. Configure fluentd as follows.
 
 #### ACMatcher
+
+_ACMatcher_ is a matcher using [Aho–Corasick algorithm](https://en.wikipedia.org/wiki/Aho%E2%80%93Corasick_algorithm) to enable faster multiple-pattern matching.
+
 ```
 <filter pattern>
   @type filter_list
@@ -66,13 +69,26 @@ While the following message is passed through as the target field specified in t
 }
 ```
 
-Additionally, the following message is also omitted since `filter_empty` is `true`. The value is determined to be empty when the trimed value is empty.
+Additionally, the following message is also omitted since `filter_empty` is `true`. The value is determined to be empty when the trimmed value is empty.
 
 ```json
 {
   "x": "   ",
   "y": "halbart"
 }
+```
+
+All these examples are _blacklisting_. That is, a text matched to a pattern will be determined to be filtered. The plugin provides the other type of filtering: _whitelisting_. With the type you can filter records that don't match any pattern. You can enable _whitelisting_ by specifying the `action` (the default value is _blacklist_) explicitly as follows.
+
+```
+<filter>
+  @type filter_list
+
+  filter AC
+  key_to_filter foo
+  pattern_file_paths blacklist.txt
+  action whitelist
+</filter>
 ```
 
 #### IPMatcher
@@ -132,6 +148,7 @@ The other use case is to filter messages likewise, but process the filtered mess
   key_to_filter field_name_you_want_to_filter
   pattern_file_paths ["file_including_patterns_separated_by_new_line"]
   filter_empty true
+  action blacklist
 
   <retag>
     add_prefix x # retag non-filtered messages whose tag will be "x.your_tag"

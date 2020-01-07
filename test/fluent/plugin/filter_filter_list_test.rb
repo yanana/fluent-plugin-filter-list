@@ -26,6 +26,14 @@ module Fluent
         filter_empty true
       )
 
+      CONFIG4 = %(
+        filter AC
+        key_to_filter x
+        pattern_file_paths ["test/fluent/plugin/patterns.txt"]
+        filter_empty true
+        action whitelist
+      )
+
       def setup
         Fluent::Test.setup
       end
@@ -94,6 +102,20 @@ module Fluent
         end
         es = d.filtered_records
         assert_equal 1, es.length
+      end
+
+      def test_message_containing_a_pattern_is_not_filtered_when_whitelisting_is_enabled
+        d = create_driver(CONFIG4)
+        d.run(default_tag: 'test') do
+          d.feed('x' => 'ab', 'y' => 'foo')
+          d.feed('x' => 'abc', 'y' => 'foo')
+          d.feed('x' => 'abcd', 'y' => 'foo')
+          d.feed('x' => 'zabcd', 'y' => 'foo')
+          d.feed('x' => '', 'y' => 'foo')
+          d.feed('x' => '   ', 'y' => 'foo')
+        end
+        es = d.filtered_records
+        assert_equal 3, es.length
       end
     end
   end

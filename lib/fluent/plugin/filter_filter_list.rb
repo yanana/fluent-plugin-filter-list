@@ -2,12 +2,14 @@ require 'fluent/plugin/out_filter_list/version'
 require 'matcher'
 require 'fluent/plugin/filter'
 require 'ip'
+require 'base'
 
 module Fluent
   module Plugin
     class FilterListFilter < Filter
       include Matchers
       include IP
+      include BaseFilter
 
       Plugin.register_filter('filter_list', self)
 
@@ -15,6 +17,7 @@ module Fluent
       config_param :key_to_filter, :string, default: nil
       config_param :pattern_file_paths, :array, default: [], value_type: :string
       config_param :filter_empty, :bool, default: false
+      config_param :action, :enum, list: %i[blacklist whitelist], default: :blacklist
 
       def configure(conf)
         super
@@ -24,7 +27,8 @@ module Fluent
 
       def filter(_tag, _time, record)
         target = record[@key_to_filter]
-        return nil if target && (@matcher.matches?(target) || (@filter_empty && target.strip.empty?))
+
+        return nil if should_filter?(target)
 
         record
       end

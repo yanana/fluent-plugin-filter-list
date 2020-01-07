@@ -1,6 +1,9 @@
+AllCops:
+  TargetRubyVersion: 2.6
+
 Naming/MethodParameterName:
   Enabled: false
-Metrics/LineLength:
+Layout/LineLength:
   Max: 160
 Style/FormatString:
   EnforcedStyle: sprintf
@@ -43,8 +46,6 @@ Style/MissingRespondToMissing:
     - 'test/test_helper.rb'
 Style/TernaryParentheses:
   Enabled: false
-Style/BlockDelimiters:
-  AutoCorrect: false
 Style/BlockDelimiters:
   AutoCorrect: false
 Style/BracesAroundHashParameters:
