@@ -5,7 +5,7 @@ require 'fluent/test/driver/output'
 
 module Fluent
   module Plugin
-    class OutFilterListTest < Minitest::Test # rubocop:disable Metrics/ClassLength
+    class OutFilterListTest < Minitest::Test
       CONFIG = %(
       )
 
@@ -54,7 +54,7 @@ module Fluent
           tag bar
         </retag>
         <retag_filtered>
-          tag buzz
+          tag baz
         </retag_filtered>
       )
 
@@ -66,7 +66,20 @@ module Fluent
           tag bar
         </retag>
         <retag_filtered>
-          tag buzz
+          tag baz
+        </retag_filtered>
+      )
+
+      CONFIG_7 = %(
+        key_to_filter foo
+        pattern_file_paths test/fluent/plugin/patterns.txt
+        filter_empty true
+        action whitelist
+        <retag>
+          tag bar
+        </retag>
+        <retag_filtered>
+          tag baz
         </retag_filtered>
       )
 
@@ -94,65 +107,78 @@ module Fluent
         end
       end
 
-      def test_retag_filtered_config_with_add_prefix
-        d = create_driver(CONFIG_1)
-        assert_equal "x", d.instance.key_to_filter
-        assert_equal "t2", d.instance.retag.tag
-        assert_nil d.instance.retag_for_filtered.tag
-        assert_equal "x", d.instance.retag_for_filtered.add_prefix
-      end
+      # def test_retag_filtered_config_with_add_prefix
+      #   d = create_driver(CONFIG_1)
+      #   assert_equal "x", d.instance.key_to_filter
+      #   assert_equal "t2", d.instance.retag.tag
+      #   assert_nil d.instance.retag_for_filtered.tag
+      #   assert_equal "x", d.instance.retag_for_filtered.add_prefix
+      # end
 
-      def test_config_without_retag_filtered
-        d = create_driver(CONFIG_2)
-        assert_equal "x", d.instance.key_to_filter
-        assert_equal "t2", d.instance.retag.tag
-        assert_nil d.instance.retag_for_filtered
-      end
+      # def test_config_without_retag_filtered
+      #   d = create_driver(CONFIG_2)
+      #   assert_equal "x", d.instance.key_to_filter
+      #   assert_equal "t2", d.instance.retag.tag
+      #   assert_nil d.instance.retag_for_filtered
+      # end
 
-      def test_matching_record_should_be_retagged_when_configured_to_do_so
-        d = create_driver(CONFIG_1)
-        d.run(default_tag: "t1") do
-          d.feed("a" => 1, "b" => 2, "x" => "ab")
-          d.feed("a" => 1, "b" => 2, "x" => "abc")
-          d.feed("a" => 1, "b" => 2, "x" => "xabcdef")
-        end
-        events = d.events
-        assert_equal 3, events.length
-        assert_equal(%w[t2 x.t1 x.t1], events.map { |e| e[0] }) # tag
-      end
+      # def test_matching_record_should_be_retagged_when_configured_to_do_so
+      #   d = create_driver(CONFIG_1)
+      #   d.run(default_tag: "t1") do
+      #     d.feed("a" => 1, "b" => 2, "x" => "ab")
+      #     d.feed("a" => 1, "b" => 2, "x" => "abc")
+      #     d.feed("a" => 1, "b" => 2, "x" => "xabcdef")
+      #   end
+      #   events = d.events
+      #   assert_equal 3, events.length
+      #   assert_equal(%w[t2 x.t1 x.t1], events.map { |e| e[0] }) # tag
+      # end
 
-      def test_message_including_pattern_should_be_filtered_when_no_retag_filtered_section
-        d = create_driver(CONFIG_2)
-        d.run(default_tag: "t1") do
-          d.feed("a" => 1, "b" => 2, "x" => "ab")
-          d.feed("a" => 1, "b" => 2, "x" => "xabcdef")
-        end
-        events = d.events
-        assert_equal 1, events.length
-        assert_equal "t2", events[0][0] # tag
-      end
+      # def test_message_including_pattern_should_be_filtered_when_no_retag_filtered_section
+      #   d = create_driver(CONFIG_2)
+      #   d.run(default_tag: "t1") do
+      #     d.feed("a" => 1, "b" => 2, "x" => "ab")
+      #     d.feed("a" => 1, "b" => 2, "x" => "xabcdef")
+      #   end
+      #   events = d.events
+      #   assert_equal 1, events.length
+      #   assert_equal "t2", events[0][0] # tag
+      # end
 
-      def test_empty_message_matches_when_filter_empty_is_true
-        d = create_driver(CONFIG_5)
+      # def test_empty_message_matches_when_filter_empty_is_true
+      #   d = create_driver(CONFIG_5)
+      #   d.run(default_tag: 't1') do
+      #     d.feed('a' => 1, 'b' => 2, 'foo' => '  ')
+      #     d.feed('a' => 1, 'b' => 2, 'foo' => '')
+      #   end
+      #   events = d.events
+      #   assert_equal 2, events.length
+      #   assert_equal(%w[baz baz], events.map { |e| e[0] }) # tag
+      # end
+
+      # def test_multiple_files
+      #   d = create_driver(CONFIG_6)
+      #   d.run(default_tag: 't1') do
+      #     d.feed('a' => 1, 'b' => 2, 'foo' => 'zyx')
+      #     d.feed('a' => 1, 'b' => 2, 'foo' => 'xyz')
+      #     d.feed('a' => 1, 'b' => 2, 'foo' => 'b')
+      #   end
+      #   events = d.events
+      #   assert_equal 3, events.length
+      #   assert_equal(%w[baz baz bar], events.map { |e| e[0] })
+      # end
+
+      def test_whitelisting
+        d = create_driver(CONFIG_7)
         d.run(default_tag: 't1') do
-          d.feed('a' => 1, 'b' => 2, 'foo' => '  ')
+          d.feed('a' => 1, 'b' => 2, 'foo' => '   ')
           d.feed('a' => 1, 'b' => 2, 'foo' => '')
-        end
-        events = d.events
-        assert_equal 2, events.length
-        assert_equal(%w[buzz buzz], events.map { |e| e[0] }) # tag
-      end
-
-      def test_multiple_files
-        d = create_driver(CONFIG_6)
-        d.run(default_tag: 't1') do
           d.feed('a' => 1, 'b' => 2, 'foo' => 'zyx')
           d.feed('a' => 1, 'b' => 2, 'foo' => 'xyz')
-          d.feed('a' => 1, 'b' => 2, 'foo' => 'b')
         end
         events = d.events
-        assert_equal 3, events.length
-        assert_equal(%w[buzz buzz bar], events.map { |e| e[0] })
+        assert_equal 4, events.length
+        assert_equal(%w[baz baz baz bar], events.map { |e| e[0] })
       end
     end
   end
