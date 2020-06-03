@@ -48,7 +48,5 @@ Style/TernaryParentheses:
   Enabled: false
 Style/BlockDelimiters:
   AutoCorrect: false
-Style/BracesAroundHashParameters:
-  Enabled: false
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
