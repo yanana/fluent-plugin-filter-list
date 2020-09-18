@@ -103,6 +103,21 @@ class ACMatcherTest < Minitest::Test
     acmatcher = ACMatcher.new(['999'])
     assert acmatcher.matches?(999)
   end
+
+  def test_patterns_consisting_of_an_arbitrary_text_and_its_substrings
+    m = ACMatcher.new(%w[xy axyz])
+    assert(m.matches?("xy"))
+    assert(m.matches?("axyz"))
+    assert(m.matches?("axyk"))
+    assert(m.matches?("axy"))
+    assert(m.matches?("bxy"))
+    assert(m.matches?("xyz"))
+    assert(!m.matches?("yz"))
+    assert(!m.matches?("ax"))
+    assert(!m.matches?("axc"))
+    assert(!m.matches?("x"))
+    assert(!m.matches?("y"))
+  end
 end
 
 class IPMatcherTest < Minitest::Test
