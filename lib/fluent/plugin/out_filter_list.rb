@@ -31,10 +31,6 @@ module Fluent
         config_param :add_prefix, :string, default: nil
       end
 
-      def initialize
-        super
-      end
-
       def validate(retag)
         return unless retag
         raise Fluent::ConfigError, "missing tag and add_prefix" unless retag.tag || retag.add_prefix
@@ -42,9 +38,9 @@ module Fluent
       end
 
       def configure_prefixes
-        @prefix_for_filtered_tag = @retag_for_filtered.add_prefix + '.' if @retag_for_filtered&.add_prefix
-        @prefix_for_filtered_tag = @retag_for_filtered&.add_prefix ? @retag_for_filtered.add_prefix + '.' : ''
-        @prefix = @retag&.add_prefix ? @retag.add_prefix + '.' : ''
+        @prefix_for_filtered_tag = "#{@retag_for_filtered.add_prefix}." if @retag_for_filtered&.add_prefix
+        @prefix_for_filtered_tag = @retag_for_filtered&.add_prefix ? "#{@retag_for_filtered.add_prefix}." : ''
+        @prefix = @retag&.add_prefix ? "#{@retag.add_prefix}." : ''
       end
 
       def configure(conf)

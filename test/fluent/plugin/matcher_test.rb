@@ -31,7 +31,7 @@ class ACMatcherTest < Minitest::Test
     @outputs = []
 
     detect_output_of_child = lambda do |node|
-      node.children.values.each do |child_node|
+      node.children.each_value do |child_node|
         @outputs.push(child_node.output) unless child_node.output.nil?
         detect_output_of_child.call(child_node)
       end
@@ -64,8 +64,8 @@ class ACMatcherTest < Minitest::Test
     k2 = 'bar'
     kw = [k1, k2]
     acmatcher = ACMatcher.new(kw)
-    assert(acmatcher.matches?(k1 + 'abc'))
-    assert(acmatcher.matches?(k2 + 'abc'))
+    assert(acmatcher.matches?("#{k1}abc"))
+    assert(acmatcher.matches?("#{k2}abc"))
     assert(!acmatcher.matches?('abcabc'))
   end
 
@@ -74,8 +74,8 @@ class ACMatcherTest < Minitest::Test
     k2 = 'bar'
     kw = [k1, k2]
     acmatcher = ACMatcher.new(kw)
-    assert(acmatcher.matches?('abc' + k1))
-    assert(acmatcher.matches?('abc' + k2))
+    assert(acmatcher.matches?("abc#{k1}"))
+    assert(acmatcher.matches?("abc#{k2}"))
     assert(!acmatcher.matches?('abcabc'))
   end
 
