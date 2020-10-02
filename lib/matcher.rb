@@ -23,6 +23,7 @@ module Matchers
 
   class IPMatcher
     attr_reader :trie
+
     include IP
 
     def initialize(patterns)
@@ -40,6 +41,7 @@ module Matchers
 
   class Trie
     attr_reader :root
+
     def initialize(patterns)
       @root = Node.new
       @root.children.default = @root
@@ -59,7 +61,7 @@ module Matchers
 
     def new_queue
       q = Queue.new
-      @root.children.values.each do |child|
+      @root.children.each_value do |child|
         q.push(child)
         child.failure = @root # set root on root's children's failure
       end

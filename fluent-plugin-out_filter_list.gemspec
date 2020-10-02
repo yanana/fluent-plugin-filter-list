@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Fluent::Plugin::FilterList::VERSION
   spec.authors       = ['Shun Yanaura']
   spec.email         = ['metroplexity@gmail.com']
+  spec.required_ruby_version = '>= 2.5.0'
 
   spec.summary       = 'A fluentd output plugin to filter keywords from messages'
   spec.description   = 'A fluentd output plugin to filter keywords from messages'

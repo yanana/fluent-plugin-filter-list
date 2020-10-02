@@ -1,5 +1,7 @@
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.5
+  NewCops: enable
+
 
 Naming/MethodParameterName:
   Enabled: false
@@ -38,7 +40,7 @@ Metrics/PerceivedComplexity:
 Style/GlobalVars:
   Exclude:
     - 'test/test_helper.rb'
-Style/MethodMissingSuper:
+Lint/MissingSuper:
   Exclude:
     - 'test/test_helper.rb'
 Style/MissingRespondToMissing:
@@ -50,3 +52,5 @@ Style/BlockDelimiters:
   AutoCorrect: false
 Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
+Style/RedundantSelfAssignment:
+  Enabled: false
