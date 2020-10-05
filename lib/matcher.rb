@@ -13,11 +13,19 @@ module Matchers
     def matches?(text)
       node = @trie.root
       text.to_s.chars.each do |char|
-        node = node.failure while node.children[char].nil? # Follow failure if it exists in case pattern doesn't match
+        failure = node.failure
         node = node.children[char]
-        return true unless node.output.nil?
+
+        return true unless node.nil? || node.output.nil?
+        return true unless failure.nil? || failure.output.nil?
+
+        # Follow failure if it exists in case pattern doesn't match
+        node = failure if node.nil?
       end
-      false
+
+      return false if node.failure.nil?
+
+      !node.failure.output.nil?
     end
   end
 
