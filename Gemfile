@@ -4,4 +4,4 @@ source 'https://rubygems.org'
 gemspec
 
 # Added at 2017-08-14 19:47:59 +0900 by 5hun:
-gem 'rubocop', '~> 0.92.0', require: false, group: [:development]
+gem 'rubocop', '~> 1.9.1', require: false, group: [:development]
