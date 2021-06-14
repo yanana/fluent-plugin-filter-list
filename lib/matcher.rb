@@ -20,12 +20,13 @@ module Matchers
         return true unless failure.nil? || failure.output.nil?
 
         # Follow failure if it exists in case pattern doesn't match
-        node = failure if node.nil?
+        node = failure.children[char] if node.nil?
       end
 
-      return false if node.failure.nil?
+      return false if node.nil?
+      return true unless node.failure.nil? || node.failure.output.nil?
 
-      !node.failure.output.nil?
+      !node.output.nil?
     end
   end
 

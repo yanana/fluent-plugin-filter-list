@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'matcher'
 
-class ACMatcherTest < Minitest::Test
+class ACMatcherTest < Minitest::Test # rubocop:disable Metrics/ClassLength
   include Matchers
 
   def test_that_tree_without_leaves_is_built_given_nil_is_passed
@@ -117,6 +117,12 @@ class ACMatcherTest < Minitest::Test
     assert(!m.matches?("axc"))
     assert(!m.matches?("x"))
     assert(!m.matches?("y"))
+  end
+
+  def test_failure_link
+    m = ACMatcher.new(%w[xyz abxyz])
+    assert(m.matches?("xyz"))
+    assert(m.matches?("axyz"))
   end
 end
 
