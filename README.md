@@ -1,6 +1,6 @@
 # fluent-plugin-filter-list
 
-[![Build Status](https://travis-ci.org/yanana/fluent-plugin-filter-list.svg?branch=master)](https://travis-ci.org/yanana/fluent-plugin-filter-list)
+[![Build Status](https://travis-ci.com/yanana/fluent-plugin-filter-list.svg?branch=master)](https://travis-ci.com/yanana/fluent-plugin-filter-list)
 
 Want to filter fluentd messages containing black-listed words in the list effectively? Use the _fluent-plugin-filter-list_ plugin. The plugin enables you to filter messages in the list of words you provide. You can either discard such messages simply, or process them in a different flow by retagging them.
 
