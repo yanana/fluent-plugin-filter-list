@@ -21,6 +21,7 @@ module Matchers
 
         # Follow failure if it exists in case pattern doesn't match
         node = failure.children[char] if node.nil?
+        node = failure if node.nil?
       end
 
       return false if node.nil?
