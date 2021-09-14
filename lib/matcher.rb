@@ -7,27 +7,19 @@ module Matchers
 
     def initialize(patterns)
       patterns = (patterns || []).compact.reject(&:empty?)
-      @trie = Trie.new patterns
+      @machine = ACAutomaton.new patterns
     end
 
     def matches?(text)
-      node = @trie.root
-      text.to_s.chars.each do |char|
-        failure = node.failure
-        node = node.children[char]
+      return false if text.nil? || text == ''
 
-        return true unless node.nil? || node.output.nil?
-        return true unless failure.nil? || failure.output.nil?
+      @machine.matches? text.to_s
+    end
 
-        # Follow failure if it exists in case pattern doesn't match
-        node = failure.children[char] if node.nil?
-        node = failure if node.nil?
-      end
+    def find(text)
+      return false if text.nil? || text == ''
 
-      return false if node.nil?
-      return true unless node.failure.nil? || node.failure.output.nil?
-
-      !node.output.nil?
+      @machine.find(text)
     end
   end
 
@@ -50,6 +42,30 @@ module Matchers
   end
 
   class Trie
+    class Node
+      attr_reader :children
+
+      def initialize
+        @children = {}
+        @children.default = nil
+      end
+
+      def insert(char)
+        @children[char] = Node.new unless @children.key?(char)
+        @children[char]
+      end
+
+      def forward(str)
+        children = @children
+        child = nil
+        str.chars.each do |char|
+          child = children[char]
+          children = child.children
+        end
+        child
+      end
+    end
+
     attr_reader :root
 
     def initialize(patterns)
@@ -58,38 +74,12 @@ module Matchers
       patterns.each do |pattern|
         insert(pattern)
       end
-      build
     end
 
     def insert(pattern = '')
       current_node = @root
-      pattern.chars.each_with_index do |char, i|
+      pattern.chars.each do |char|
         current_node = current_node.insert(char)
-        current_node.output = pattern if i == pattern.length - 1
-      end
-    end
-
-    def new_queue
-      q = Queue.new
-      @root.children.each_value do |child|
-        q.push(child)
-        child.failure = @root # set root on root's children's failure
-      end
-      q
-    end
-
-    def build
-      # Update failure on each node.
-      # Search longest matching suffix (which becomes failure) by BFS. In case no matching suffix, root becomes failure.
-      q = new_queue
-      until q.empty?
-        cur_node = q.pop
-        cur_node.children.each do |char, child|
-          q.push(child)
-          detect_node = cur_node.failure || @root
-          detect_node = detect_node.failure while detect_node.children[char].nil?
-          child.failure = detect_node.children[char]
-        end
       end
     end
 
@@ -107,20 +97,162 @@ module Matchers
     end
   end
 
-  class Node
-    attr_reader :children
-    attr_accessor :failure, :output
+  # An AC automaton.
+  # Based on https://www.cs.uku.fi/~kilpelai/BSA05/lectures/slides04.pdf.
+  class ACAutomaton
+    class Node
+      # Manages the goto as a character -> node ID mapping.
+      attr_reader :goto
+      # Uniquely (in an automaton) assigned ID of the Node.
+      attr_reader :id
+      attr_accessor :failure
+      # Stores out of AC, that is the index of the patterns.
+      attr_accessor :out
 
-    def initialize
-      @children = {}
-      @children.default = nil
-      @output = nil
-      @failure = nil
+      def initialize(id: 0, goto: {}, failure: 0, out: [])
+        @id = id
+        @goto = goto
+        @failure = failure
+        @out = out
+      end
+
+      def root?
+        @id.zero?
+      end
+
+      def g(char)
+        if (next_node = @goto[char])
+          return next_node
+        end
+        return 0 if root?
+
+        nil
+      end
+
+      def to_s
+        "id: #{@id}, goto: #{@goto}, failure: #{@failure}, out: #{@out}"
+      end
+
+      def ==(other)
+        @id == other.id && @goto == other.goto && @failure == other.failure && @out == other.out
+      end
+    end
+    # Nodes are managed in an array. The indices are
+    attr_reader :nodes, :patterns
+
+    def initialize(patterns)
+      @nodes = []
+      @patterns = patterns || []
+      build(@patterns)
     end
 
-    def insert(char)
-      @children[char] = Node.new unless @children.key?(char)
-      @children[char]
+    # Creates a new node and returns the id.
+    # This method is not thread safe.
+    def new_node
+      id = @nodes.size
+      node = Node.new(id: id)
+      @nodes.push(node)
+      id
+    end
+
+    def build(patterns)
+      build_goto(patterns)
+      build_failure
+    end
+
+    def build_goto(patterns)
+      root = new_node
+      patterns.each_with_index do |pattern, i|
+        q = root
+        pattern.chars.each do |char|
+          next_q = @nodes[q].goto[char]
+          if next_q
+            q = next_q
+          else
+            new_q = new_node
+            @nodes[q].goto[char] = new_q
+            q = new_q
+          end
+        end
+
+        @nodes[q].out.push(i)
+      end
+    end
+
+    def build_failure
+      queue = [0]
+      until queue.empty?
+        n = queue.shift
+        node = @nodes[n]
+        @nodes[n].goto.each do |c, next_node|
+          queue.push(next_node)
+
+          next if n.zero?
+
+          failure = node.failure
+          failure = @nodes[failure].failure while @nodes[failure].g(c).nil?
+          @nodes[next_node].failure = @nodes[failure].g(c)
+          @nodes[next_node].out.concat(@nodes[@nodes[next_node].failure].out)
+        end
+      end
+    end
+
+    def find(text)
+      return [] if text.nil? || text == ''
+
+      find_id(text).map do |id|
+        @patterns[id]
+      end
+    end
+
+    # Finds and retuns matched pattens' indices.
+    def find_id(text)
+      return [] if text.nil? || text == ''
+
+      q = 0
+      result = []
+      text.chars.each_with_index do |c, _i|
+        loop do
+          node = @nodes[q]
+          if (to_go_next = node.goto[c])
+            q = to_go_next
+            break
+          end
+          break if q.zero?
+
+          q = node.failure
+        end
+
+        out = @nodes[q].out
+        result.concat(out) unless out.empty?
+      end
+
+      result
+    end
+
+    # Returns true if the text matches any pattern, otherwise false.
+    def matches?(text)
+      return false if text.nil?
+
+      q = 0
+      text.chars.each do |c|
+        loop do
+          node = @nodes[q]
+          if (to_go_next = node.goto[c])
+            q = to_go_next
+            break
+          end
+          break if q.zero?
+
+          q = node.failure
+        end
+
+        out = @nodes[q].out
+
+        return true unless out.empty?
+      end
+
+      false
     end
   end
 end
