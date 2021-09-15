@@ -14,7 +14,7 @@ Style/FormatStringToken:
 Style/StringLiterals:
   Enabled: false
 Metrics/MethodLength:
-  Max: 15
+  Max: 25
 Style/Documentation:
   Enabled: false
 Style/FrozenStringLiteralComment:
