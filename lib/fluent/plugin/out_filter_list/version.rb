@@ -1,7 +1,7 @@
 module Fluent
   module Plugin
     module FilterList
-      VERSION = "0.7.4"
+      VERSION = "0.7.5"
     end
   end
 end
