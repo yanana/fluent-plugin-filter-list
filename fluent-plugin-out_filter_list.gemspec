@@ -4,18 +4,19 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'fluent/plugin/out_filter_list/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'fluent-plugin-filter-list'
-  spec.version       = Fluent::Plugin::FilterList::VERSION
-  spec.authors       = ['Shun Yanaura']
-  spec.email         = ['metroplexity@gmail.com']
+  spec.name                  = 'fluent-plugin-filter-list'
+  spec.version               = Fluent::Plugin::FilterList::VERSION
+  spec.authors               = ['Shun Yanaura']
+  spec.email                 = ['metroplexity@gmail.com']
   spec.required_ruby_version = '>= 2.5.0'
+  spec.metadata              = { 'rubygems_mfa_required' => 'true' }
 
-  spec.summary       = 'A fluentd output plugin to filter keywords from messages'
-  spec.description   = 'A fluentd output plugin to filter keywords from messages'
-  spec.homepage      = 'https://github.com/yanana/fluent-plugin-filter-list'
-  spec.license       = 'MIT'
+  spec.summary     = 'A fluentd output plugin to filter keywords from messages'
+  spec.description = 'A fluentd output plugin to filter keywords from messages'
+  spec.homepage    = 'https://github.com/yanana/fluent-plugin-filter-list'
+  spec.license     = 'MIT'
 
-  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
+  spec.files = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
   end
   spec.bindir        = 'bin'
